@@ -1,6 +1,6 @@
 {
   "name": "hotserve",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A small static files server that communicates changes using websocket",
   "main": "index.js",
   "scripts": {
