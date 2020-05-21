@@ -7,5 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-ws": "^4.0.0",
+    "fb-watchman": "^2.0.1"
+  },
+  "type": "module",
+  "bin": {
+    "hotserve": "./index.js"
+  }
 }
