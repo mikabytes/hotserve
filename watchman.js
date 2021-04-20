@@ -17,7 +17,7 @@ watchman.capabilityCheck(
   }
 )
 
-export default function watchDir(dir) {
+export default function watchDir(dir, pattern) {
   return new Promise((res, rej) => {
     watchman.command([`watch-project`, dir], (error, client) => {
       if (error) {
@@ -34,7 +34,7 @@ export default function watchDir(dir) {
 
       getClock(client).then((clock) => {
         res({
-          subscribe: (cb) => subscribe(client, clock, dir, cb),
+          subscribe: (cb) => subscribe(client, clock, dir, cb, pattern),
         })
       })
     })
@@ -54,9 +54,9 @@ function getClock(client) {
   })
 }
 
-function subscribe(client, clock, dir, cb) {
+function subscribe(client, clock, dir, cb, pattern) {
   const sub = {
-    expression: [`allof`, [`match`, `*.js`]],
+    expression: [`allof`, [`imatch`, pattern], [`type`, `f`]],
     fields: [`name`, `exists`],
     since: clock,
   }

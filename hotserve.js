@@ -1,8 +1,12 @@
 import watchman from "./watchman.js"
 import express from "express"
 import expressWs from "express-ws"
+import fs from "fs/promises"
+import path from "path"
+import globToRegex from "glob-to-regexp"
 
-export default async function run({ mainHtml, dir, port }) {
+export default async function run({ mainHtml, dir, port, pattern }) {
+  dir = path.resolve(dir)
   const app = express()
 
   // add cors headers
@@ -21,6 +25,32 @@ export default async function run({ mainHtml, dir, port }) {
     sockets.push(ws)
   })
 
+  app.get(`/files`, async (req, res) => {
+    const files = []
+    const exclude =
+      req.query.exclude && globToRegex(req.query.exclude, { extended: true })
+    const include =
+      req.query.include && globToRegex(req.query.include, { extended: true })
+
+    for await (const file of getFiles(`${dir}/`, { exclude, include })) {
+      files.push(file.path)
+    }
+    res.json(
+      files.sort((a, b) => {
+        const dirA = a.split(`/`).length
+        const dirB = b.split(`/`).length
+
+        if (dirA < dirB) {
+          return -1
+        } else if (dirB < dirA) {
+          return 1
+        } else {
+          return a.localeCompare(b)
+        }
+      })
+    )
+  })
+
   if (mainHtml) {
     app.get(`*`, (q, s) => {
       s.sendFile(mainHtml, { root: dir })
@@ -33,7 +63,7 @@ export default async function run({ mainHtml, dir, port }) {
     res.status(500).send(err.message)
   })
 
-  const client = await watchman(dir)
+  const client = await watchman(dir, pattern)
   client.subscribe((file) => {
     sockets.forEach((socket) => {
       try {
@@ -49,4 +79,29 @@ export default async function run({ mainHtml, dir, port }) {
   app.listen(port)
 
   console.log(`Server started at http://localhost:${port}`)
+}
+
+async function* getFiles(path, { exclude, include }, base) {
+  if (!base) {
+    base = path
+  }
+
+  const entries = await fs.readdir(path, { withFileTypes: true })
+
+  for (let file of entries) {
+    const fullPath = `${path}${file.name}`
+    const relativePath = fullPath.slice(base.length)
+
+    if (exclude && exclude.test(relativePath)) {
+      continue
+    }
+
+    if (file.isDirectory()) {
+      yield* getFiles(`${fullPath}/`, { exclude, include }, base)
+    } else {
+      if (!include || include.test(relativePath)) {
+        yield { ...file, path: relativePath }
+      }
+    }
+  }
 }
