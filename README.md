@@ -19,7 +19,7 @@ hotserve [mainHtmlFile] [port] [pattern]
 
 `port` defaults to 3000. 
 
-`pattern` is a glob. Defaults to `*.js`
+`pattern` is a glob. Defaults to `*.js`. Used to filter what files are reported on `/changes` endpoint.
 
 Open a browser and go to `http://localhost:3000`, or the `port` you specified.
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+- Clarified in README.md what pattern does.
+
 ## 1.2.0
 
 - Added option to provide pattern to search for:
