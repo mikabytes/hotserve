@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+- Fix missed import
+
 ## 1.3.0
 
 - Added option to use hotserve programatically.
@@ -15,6 +19,7 @@
   ```
   hotserve [mainHtmlFile] [port] [pattern]
   ```
+
 - Added a startup check to error if watchman hasn't been installed
 - Added option to fetch a list of folders and files using /files endpoint
 

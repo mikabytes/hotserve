@@ -3,6 +3,7 @@ import expressWs from "express-ws"
 import fs from "fs/promises"
 import path from "path"
 import globToRegex from "glob-to-regexp"
+import express from "express"
 
 export default async function run({ mainHtml, dir, pattern, app }) {
   dir = path.resolve(dir)
