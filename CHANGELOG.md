@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+- Added option to use hotserve programatically.
+
 ## 1.2.1
 
 - Clarified in README.md what pattern does.
