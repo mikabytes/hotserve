@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2
+
+- Fix issue with worker starting even if hotserve wasn't used. Prevented process from exiting.
+
 ## 1.3.1
 
 - Fix missed import

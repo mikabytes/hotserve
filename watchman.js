@@ -1,23 +1,26 @@
 import Watchman from "fb-watchman"
 
-const watchman = new Watchman.Client()
-
-watchman.capabilityCheck(
-  { optional: [], required: [`relative_root`, `wildmatch`] },
-  function (error, resp) {
-    if (error) {
-      // error will be an Error object if the watchman service is not
-      // installed, or if any of the names listed in the `required`
-      // array are not supported by the server
-      console.error(error)
-    }
-    // resp will be an extended version response:
-    // {'version': '3.8.0', 'capabilities': {'relative_root': true}}
-    // console.log(resp)
-  }
-)
+let watchman
 
 export default function watchDir(dir, pattern) {
+  if (!watchman) {
+    watchman = new Watchman.Client()
+
+    watchman.capabilityCheck(
+      { optional: [], required: [`relative_root`, `wildmatch`] },
+      function (error, resp) {
+        if (error) {
+          // error will be an Error object if the watchman service is not
+          // installed, or if any of the names listed in the `required`
+          // array are not supported by the server
+          console.error(error)
+        }
+        // resp will be an extended version response:
+        // {'version': '3.8.0', 'capabilities': {'relative_root': true}}
+        // console.log(resp)
+      }
+    )
+  }
   return new Promise((res, rej) => {
     watchman.command([`watch-project`, dir], (error, client) => {
       if (error) {
