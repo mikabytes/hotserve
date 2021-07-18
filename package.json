@@ -17,6 +17,7 @@
     "glob-to-regexp": "^0.4.1"
   },
   "type": "module",
+  "homepage": "https://github.com/mikabytes/hotserve",
   "bin": {
     "hotserve": "start.js"
   }
