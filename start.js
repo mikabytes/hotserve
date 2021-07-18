@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import express from "express"
 import hotserve from "./hotserve.js"
 import exists from "command-exists"
 
@@ -23,7 +24,10 @@ async function run() {
 
   port = port || 3000
 
-  hotserve({ port, dir, mainHtml, pattern })
+  const app = express()
+  hotserve({ dir, mainHtml, pattern, app })
+  app.listen(port)
+  console.log(`Server started at http://localhost:${port}`)
 }
 
 run()

@@ -2,7 +2,7 @@
   "name": "hotserve",
   "version": "1.2.1",
   "description": "A small static files server that communicates changes using websocket",
-  "main": "start.js",
+  "main": "hotserve.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "start.js"

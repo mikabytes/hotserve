@@ -1,13 +1,15 @@
 import watchman from "./watchman.js"
-import express from "express"
 import expressWs from "express-ws"
 import fs from "fs/promises"
 import path from "path"
 import globToRegex from "glob-to-regexp"
 
-export default async function run({ mainHtml, dir, port, pattern }) {
+export default async function run({ mainHtml, dir, pattern, app }) {
   dir = path.resolve(dir)
-  const app = express()
+
+  if (!app) {
+    throw new Error(`app wasn't provided to 'run' function`)
+  }
 
   // add cors headers
   app.use((req, res, next) => {
@@ -75,10 +77,6 @@ export default async function run({ mainHtml, dir, port, pattern }) {
       }
     })
   })
-
-  app.listen(port)
-
-  console.log(`Server started at http://localhost:${port}`)
 }
 
 async function* getFiles(path, { exclude, include }, base) {

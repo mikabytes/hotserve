@@ -7,7 +7,7 @@ This tiny server provides static files in current folder and provides endpoints 
 1. Install Watchman: https://facebook.github.io/watchman/docs/install/
 2. Install hotserve: `npm i -g hotserve`
 
-## Usage
+## Usage - CLI
 
 Go to the folder containing your project, then run:
 
@@ -17,11 +17,25 @@ hotserve [mainHtmlFile] [port] [pattern]
 
 `mainHtmlFile` is a file that will be sent if no other files are matched. Useful for Single Page Apps that uses dynamic URLs. Use `""` to disable.
 
-`port` defaults to 3000. 
+`port` defaults to 3000.
 
 `pattern` is a glob. Defaults to `*.js`. Used to filter what files are reported on `/changes` endpoint.
 
 Open a browser and go to `http://localhost:3000`, or the `port` you specified.
+
+## Usage - programmatically
+
+You may choose to include hotserve as part of your own server. This way you can host additional endpoints on the same express instance:
+
+```javascript
+import express from "express"
+import hotserve from "hotserve"
+
+const app = express()
+hotserve({ dir, mainHtml, pattern, app })
+app.listen(port)
+console.log(`Server started at http://localhost:${port}`)
+```
 
 ## Client-side reloading
 
@@ -74,6 +88,6 @@ Note that empty folders will never be included. Only files are listed. This feat
 
 There's also two options to limit files. `include` (defaults to `*`) can be set to only include files matching a glob. For example `GET /files?include=*.js` would only return javascript files.
 
-Similarly, there's an exclude option to explicitly forbid certain files or folders. `GET /files?include=*.js&exclude={node_modules,.git}` would return all javascript files except those in `node_modules` and `.git` folders. 
+Similarly, there's an exclude option to explicitly forbid certain files or folders. `GET /files?include=*.js&exclude={node_modules,.git}` would return all javascript files except those in `node_modules` and `.git` folders.
 
 Both `include` and `exclude` are globs with extended interpretation.
