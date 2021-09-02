@@ -1,9 +1,10 @@
-import watchman from "./watchman.js"
+import watcher from './watcher.js'
 import expressWs from "express-ws"
 import fs from "fs/promises"
 import path from "path"
 import globToRegex from "glob-to-regexp"
 import express from "express"
+import EventEmitter from 'events'
 
 export default async function run({ mainHtml, dir, pattern, app }) {
   dir = path.resolve(dir)
@@ -66,8 +67,10 @@ export default async function run({ mainHtml, dir, pattern, app }) {
     res.status(500).send(err.message)
   })
 
-  const client = await watchman(dir, pattern)
-  client.subscribe((file) => {
+
+  const client = new EventEmitter()
+  watcher(client, dir, pattern)
+  client.on('file-change', (file) => {
     sockets.forEach((socket) => {
       try {
         if (socket.readyState !== 3) {
@@ -78,6 +81,7 @@ export default async function run({ mainHtml, dir, pattern, app }) {
       }
     })
   })
+
 }
 
 async function* getFiles(path, { exclude, include }, base) {
