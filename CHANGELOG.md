@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.3
+
+- Replaced Watchman with Chokidar. This way you no longer need to install a third party binary to use hotserve! #2 (thanks Seke1412!)
+
 ## 1.3.2
 
 - Fix issue with worker starting even if hotserve wasn't used. Prevented process from exiting.
