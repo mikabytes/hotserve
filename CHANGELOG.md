@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4
+
+- Fixes issue with full path instead of relative #3
+
 ## 1.3.3
 
 - Replaced Watchman with Chokidar. This way you no longer need to install a third party binary to use hotserve! #2 (thanks Seke1412!)
