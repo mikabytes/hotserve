@@ -1,11 +1,12 @@
 # Hotserve
 
+*Starting with 2.0.0 websocket support has been dropped in favor of Server Sent Events. See Changelog*
+
 This tiny server provides static files in current folder and provides endpoints for listening to file changes, or listing available files. This makes development servers more versatile.
 
 ## Install
 
-1. Install Watchman: https://facebook.github.io/watchman/docs/install/
-2. Install hotserve: `npm i -g hotserve`
+`npm i -g hotserve`
 
 ## Usage - CLI
 
@@ -42,10 +43,8 @@ console.log(`Server started at http://localhost:${port}`)
 The server provides a websocket endpoint `/changes` that is fired every time a file is modified or deleted.
 
 ```javascript
-const url = new URL(`/changes`, location.origin)
-url.protocol = `ws:`
-
-new WebSocket(url).onmessage = (message) => {
+const source = new EventSource(`/changes`)
+source.onmessage = (message) => {
   const { path, exists } = JSON.parse(message.data)
 
   if (!exists) {

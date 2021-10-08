@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0.0-alpha.1
+
+This is a breaking change. Hotserve no longer supports websockets. Instead, Server Sent Events (SSE) is used. The reason for this is the continued lack of active development on dependency `express-ws` and its inability to be used together with Express Router. So:
+
+README has been updated with examples.
+
+### Cons
+
+- hotserve no longer supports websockets
+
+### Pros
+
+- You may now use `const app = express(), subApp = express() ; hotserve({app: app2, ...}) ; express.use('/some/sub/path', subApp) ; app.listen()` to have hotserve mounted on /some/sub/path
+
 ## 1.3.4
 
 - Fixes issue with full path instead of relative #3

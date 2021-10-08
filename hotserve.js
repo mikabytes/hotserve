@@ -1,10 +1,9 @@
-import watcher from './watcher.js'
-import expressWs from "express-ws"
+import watcher from "./watcher.js"
 import fs from "fs/promises"
 import path from "path"
 import globToRegex from "glob-to-regexp"
 import express from "express"
-import EventEmitter from 'events'
+import EventEmitter from "events"
 
 export default async function run({ mainHtml, dir, pattern, app }) {
   dir = path.resolve(dir)
@@ -21,12 +20,21 @@ export default async function run({ mainHtml, dir, pattern, app }) {
     next()
   })
 
-  let sockets = []
-  expressWs(app)
+  let listeners = new Set()
 
   app.use(express.static(dir))
-  app.ws(`/changes`, (ws, req) => {
-    sockets.push(ws)
+  app.get(`/changes`, (req, res) => {
+    res.setHeader("Cache-Control", "no-cache")
+    res.setHeader("Content-Type", "text/event-stream")
+    res.setHeader("Access-Control-Allow-Origin", "*")
+    res.setHeader("Connection", "keep-alive")
+    res.flushHeaders() // flush the headers to establish SSE with client
+
+    listeners.add(res)
+
+    res.on(`close`, () => {
+      listeners.delete(res)
+    })
   })
 
   app.get(`/files`, async (req, res) => {
@@ -67,21 +75,13 @@ export default async function run({ mainHtml, dir, pattern, app }) {
     res.status(500).send(err.message)
   })
 
-
   const client = new EventEmitter()
   watcher(client, dir, pattern)
-  client.on('file-change', (file) => {
-    sockets.forEach((socket) => {
-      try {
-        if (socket.readyState !== 3) {
-          socket.send(JSON.stringify(file))
-        }
-      } catch (e) {
-        console.error(e)
-      }
-    })
+  client.on("file-change", (file) => {
+    for (const listener of listeners) {
+      listener.write(`data: ${JSON.stringify(file)}\n\n`)
+    }
   })
-
 }
 
 async function* getFiles(path, { exclude, include }, base) {
